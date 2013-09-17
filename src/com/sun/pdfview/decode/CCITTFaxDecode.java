@@ -7,16 +7,13 @@ import com.sun.pdfview.PDFObject;
 
 public class CCITTFaxDecode {
 
-
-
 	protected static ByteBuffer decode(PDFObject dict, ByteBuffer buf,
-            PDFObject params) throws IOException {
+			PDFObject params) throws IOException {
 
 		byte[] bytes = new byte[buf.remaining()];
-	    buf.get(bytes, 0, bytes.length);
+		buf.get(bytes, 0, bytes.length);
 		return ByteBuffer.wrap(decode(dict, bytes));
 	}
-
 
 	protected static byte[] decode(PDFObject dict, byte[] source) throws IOException {
 		int width = 1728;
@@ -55,15 +52,15 @@ public class CCITTFaxDecode {
 			} else if (k < 0) {
 				decoder.decodeT6(destination, source, 0, rows);
 			}
-		}catch (Exception e) {
-			System.out.println("Error decoding CCITTFax image k: "+ k);
+		} catch (Exception e) {
+			System.out.println("Error decoding CCITTFax image k: " + k);
 			// some PDf producer don't correctly assign a k value for the deocde,
-			// as  result we can try one more time using the T6.
-			//first, reset buffer
+			// as result we can try one more time using the T6.
+			// first, reset buffer
 			destination = new byte[size];
 			try {
 				decoder.decodeT6(destination, source, 0, rows);
-			}catch (Exception e1) {
+			} catch (Exception e1) {
 				// do nothing
 				System.out.println("Error decoding CCITTFax image");
 			}
@@ -78,9 +75,10 @@ public class CCITTFaxDecode {
 		return destination;
 	}
 
-	public static int getOptionFieldInt(PDFObject dict, String name, int defaultValue) throws IOException {
+	public static int getOptionFieldInt(PDFObject dict, String name, int defaultValue)
+			throws IOException {
 
-		PDFObject dictParams =  dict.getDictRef("DecodeParms");
+		PDFObject dictParams = dict.getDictRef("DecodeParms");
 
 		if (dictParams == null) {
 			return defaultValue;
@@ -92,9 +90,10 @@ public class CCITTFaxDecode {
 		return value.getIntValue();
 	}
 
-	public static boolean getOptionFieldBoolean(PDFObject dict, String name, boolean defaultValue) throws IOException {
+	public static boolean getOptionFieldBoolean(PDFObject dict, String name, boolean defaultValue)
+			throws IOException {
 
-		PDFObject dictParams =  dict.getDictRef("DecodeParms");
+		PDFObject dictParams = dict.getDictRef("DecodeParms");
 
 		if (dictParams == null) {
 			return defaultValue;

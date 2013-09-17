@@ -1,23 +1,23 @@
 /*
  * Based on the SUN code (see license beyond) changes are made to handle CCITTFax encoded
  * data in a PDF image. This may or may not apply to real world CCITT documents.
- *
+ * 
  * Copyright (c) 2007, intarsys consulting GmbH
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
+ * this list of conditions and the following disclaimer.
+ * 
  * - Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- *
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * 
  * - Neither the name of intarsys nor the names of its contributors may be used
- *   to endorse or promote products derived from this software without specific
- *   prior written permission.
- *
+ * to endorse or promote products derived from this software without specific
+ * prior written permission.
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,21 +32,21 @@
  */
 /*
  * Copyright (c) 2001 Sun Microsystems, Inc. All Rights Reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * -Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * 
  * -Redistribution in binary form must reproduct the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * 
  * Neither the name of Sun Microsystems, Inc. or the names of contributors may
  * be used to endorse or promote products derived from this software without
  * specific prior written permission.
- *
+ * 
  * This software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
  * IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
@@ -58,14 +58,16 @@
  * CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF
  * OR INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGES.
- *
+ * 
  * You acknowledge that Software is not designed,licensed or intended for use in
  * the design, construction, operation or maintenance of any nuclear facility.
  */
 package com.sun.pdfview.decode;
 
 public class CCITTFaxDecoder {
-	static int[] table1 = { 0x00, // 0 bits are left in first byte - SHOULD
+
+	static int[] table1 = {
+			0x00, // 0 bits are left in first byte - SHOULD
 			// NOT HAPPEN
 			0x01, // 1 bits are left in first byte
 			0x03, // 2 bits are left in first byte
@@ -74,10 +76,12 @@ public class CCITTFaxDecoder {
 			0x1f, // 5 bits are left in first byte
 			0x3f, // 6 bits are left in first byte
 			0x7f, // 7 bits are left in first byte
-			0xff // 8 bits are left in first byte
+			0xff
+	// 8 bits are left in first byte
 	};
 
-	static int[] table2 = { 0x00, // 0
+	static int[] table2 = {
+			0x00, // 0
 			0x80, // 1
 			0xc0, // 2
 			0xe0, // 3
@@ -85,11 +89,13 @@ public class CCITTFaxDecoder {
 			0xf8, // 5
 			0xfc, // 6
 			0xfe, // 7
-			0xff // 8
+			0xff
+	// 8
 	};
 
 	// Table to be used when fillOrder = 2, for flipping bytes.
-	static byte[] flipTable = { 0, -128, 64, -64, 32, -96, 96, -32, 16, -112,
+	static byte[] flipTable = {
+			0, -128, 64, -64, 32, -96, 96, -32, 16, -112,
 			80, -48, 48, -80, 112, -16, 8, -120, 72, -56, 40, -88, 104, -24,
 			24, -104, 88, -40, 56, -72, 120, -8, 4, -124, 68, -60, 36, -92,
 			100, -28, 20, -108, 84, -44, 52, -76, 116, -12, 12, -116, 76, -52,
@@ -107,11 +113,12 @@ public class CCITTFaxDecoder {
 			-13, 11, -117, 75, -53, 43, -85, 107, -21, 27, -101, 91, -37, 59,
 			-69, 123, -5, 7, -121, 71, -57, 39, -89, 103, -25, 23, -105, 87,
 			-41, 55, -73, 119, -9, 15, -113, 79, -49, 47, -81, 111, -17, 31,
-			-97, 95, -33, 63, -65, 127, -1, };
+			-97, 95, -33, 63, -65, 127, -1,
+	};
 
 	// The main 10 bit white runs lookup table
 	static short white[] = {
-	// 0 - 7
+			// 0 - 7
 			6430, 6400, 6400, 6400, 3225, 3225, 3225, 3225,
 			// 8 - 15
 			944, 944, 944, 944, 976, 976, 976, 976,
@@ -366,26 +373,32 @@ public class CCITTFaxDecoder {
 			// 1008 - 1015
 			232, 232, 232, 232, 232, 232, 232, 232,
 			// 1016 - 1023
-			232, 232, 232, 232, 232, 232, 232, 232, };
+			232, 232, 232, 232, 232, 232, 232, 232,
+	};
 
 	// Additional make up codes for both White and Black runs
-	static short[] additionalMakeup = { 28679, 28679, 31752, (short) 32777,
+	static short[] additionalMakeup = {
+			28679, 28679, 31752, (short) 32777,
 			(short) 33801, (short) 34825, (short) 35849, (short) 36873,
 			(short) 29703, (short) 29703, (short) 30727, (short) 30727,
-			(short) 37897, (short) 38921, (short) 39945, (short) 40969 };
+			(short) 37897, (short) 38921, (short) 39945, (short) 40969
+	};
 
 	// Initial black run look up table, uses the first 4 bits of a code
 	static short[] initBlack = {
-	// 0 - 7
+			// 0 - 7
 			3226, 6412, 200, 168, 38, 38, 134, 134, // 8 - 15
-			100, 100, 100, 100, 68, 68, 68, 68 };
+			100, 100, 100, 100, 68, 68, 68, 68
+	};
 
 	//
-	static short[] twoBitBlack = { 292, 260, 226, 226 }; // 0 - 3
+	static short[] twoBitBlack = {
+			292, 260, 226, 226
+	}; // 0 - 3
 
 	// Main black run table, using the last 9 bits of possible 13 bit code
 	static short black[] = {
-	// 0 - 7
+			// 0 - 7
 			62, 62, 30, 30, 0, 0, 0, 0,
 			// 8 - 15
 			0, 0, 0, 0, 0, 0, 0, 0,
@@ -512,10 +525,11 @@ public class CCITTFaxDecoder {
 			// 496 - 503
 			390, 390, 390, 390, 390, 390, 390, 390,
 			// 504 - 511
-			390, 390, 390, 390, 390, 390, 390, 390, };
+			390, 390, 390, 390, 390, 390, 390, 390,
+	};
 
 	static byte[] twoDCodes = {
-	// 0 - 7
+			// 0 - 7
 			80, 88, 23, 71, 30, 30, 62, 62, // 8 - 15
 			4, 4, 4, 4, 4, 4, 4, 4, // 16 - 23
 			11, 11, 11, 11, 11, 11, 11, 11, // 24 - 31
@@ -531,7 +545,8 @@ public class CCITTFaxDecoder {
 			41, 41, 41, 41, 41, 41, 41, 41, // 104 - 111
 			41, 41, 41, 41, 41, 41, 41, 41, // 112 - 119
 			41, 41, 41, 41, 41, 41, 41, 41, // 120 - 127
-			41, 41, 41, 41, 41, 41, 41, 41, };
+			41, 41, 41, 41, 41, 41, 41, 41,
+	};
 
 	private int bitPointer;
 
@@ -566,10 +581,10 @@ public class CCITTFaxDecoder {
 	 */
 	public CCITTFaxDecoder(int fillOrder, int w, int h) {
 		this.fillOrder = fillOrder;
-		// Some of the decode methods assume prevChangingElms 
+		// Some of the decode methods assume prevChangingElms
 		// and currChaningElems are at least of length 2.
-		if(w<2) {
-		   w=2;
+		if (w < 2) {
+			w = 2;
 		}
 
 		this.w = w;
@@ -641,8 +656,7 @@ public class CCITTFaxDecoder {
 					updatePointer(4 - bits);
 				} else if (bits == 15) {
 					// EOL code
-					throw new RuntimeException(
-							"EOL code word encountered in Black run."); //$NON-NLS-1$
+					throw new RuntimeException("EOL code word encountered in Black run."); //$NON-NLS-1$
 				} else {
 					runLength += code;
 					updatePointer(9 - bits);
@@ -1233,8 +1247,7 @@ public class CCITTFaxDecoder {
 			} else if (bits == 0) { // ERROR
 				throw new RuntimeException("Invalid code encountered."); //$NON-NLS-1$
 			} else if (bits == 15) { // EOL
-				throw new RuntimeException(
-						"EOL code word encountered in White run."); //$NON-NLS-1$
+				throw new RuntimeException("EOL code word encountered in White run."); //$NON-NLS-1$
 			} else {
 				// 11 bits - 0000 0111 1111 1111 = 0x07ff
 				code = (entry >>> 5) & 0x07ff;
@@ -1426,8 +1439,7 @@ public class CCITTFaxDecoder {
 				}
 			}
 			if (next12Bits != 1) {
-				throw new RuntimeException(
-						"Scanline must begin with EOL code word."); //$NON-NLS-1$
+				throw new RuntimeException("Scanline must begin with EOL code word."); //$NON-NLS-1$
 			}
 		} else {
 			// First EOL code word xxxx 0000 0000 0001 will occur
@@ -1436,8 +1448,7 @@ public class CCITTFaxDecoder {
 			int bitsLeft = 8 - this.bitPointer;
 
 			if (nextNBits(bitsLeft) != 0) {
-				throw new RuntimeException(
-						"All fill bits preceding EOL code must be 0."); //$NON-NLS-1$
+				throw new RuntimeException("All fill bits preceding EOL code must be 0."); //$NON-NLS-1$
 			}
 
 			// If the number of bitsLeft is less than 8, then to have a 12
@@ -1446,8 +1457,7 @@ public class CCITTFaxDecoder {
 			// that.
 			if (bitsLeft < 4) {
 				if (nextNBits(8) != 0) {
-					throw new RuntimeException(
-							"All fill bits preceding EOL code must be 0."); //$NON-NLS-1$
+					throw new RuntimeException("All fill bits preceding EOL code must be 0."); //$NON-NLS-1$
 				}
 			}
 

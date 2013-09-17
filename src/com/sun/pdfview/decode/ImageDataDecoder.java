@@ -7,20 +7,20 @@ import java.awt.image.DataBufferInt;
 
 /*****************************************************************************
  * Decode image data to a usable color space.
- *
+ * 
  * @since 25.03.2011
  ****************************************************************************/
 
 public class ImageDataDecoder {
-	
+
 	/*************************************************************************
 	 * @param bimg
 	 * @return
 	 ************************************************************************/
-    
+
 	static byte[] decodeImageData(BufferedImage bimg) {
 		byte[] output = null;
-	
+
 		int type = bimg.getType();
 
 		if (type == BufferedImage.TYPE_INT_RGB) {
@@ -75,6 +75,5 @@ public class ImageDataDecoder {
 		}
 		return output;
 	}
-
 
 }
