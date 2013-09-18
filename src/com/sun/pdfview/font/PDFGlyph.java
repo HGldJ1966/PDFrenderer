@@ -33,13 +33,13 @@ import com.sun.pdfview.PDFShapeCmd;
 public class PDFGlyph {
 
 	/** the character code of this glyph */
-	private char src;
+	private final char src;
 
 	/** the name of this glyph */
-	private String name;
+	private final String name;
 
 	/** the advance from this glyph */
-	private Point2D advance;
+	private final Point2D advance;
 
 	/** the shape represented by this glyph (for all fonts but type 3) */
 	private GeneralPath shape;
@@ -87,13 +87,19 @@ public class PDFGlyph {
 	/** Add commands for this glyph to a page */
 	public Point2D addCommands(PDFPage cmds, AffineTransform transform, int mode) {
 		if (this.shape != null) {
+			System.out.println("[text] shape: " + src);
 			GeneralPath outline = (GeneralPath) this.shape.createTransformedShape(transform);
 			cmds.addCommand(new PDFShapeCmd(outline, mode));
 		} else if (this.page != null) {
+			System.out.println("[text] page: " + src);
 			cmds.addCommands(this.page, transform);
 		}
 
 		return this.advance;
+	}
+
+	public Point2D getAdvance() {
+		return advance;
 	}
 
 	@Override

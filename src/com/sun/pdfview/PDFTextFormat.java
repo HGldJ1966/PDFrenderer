@@ -18,7 +18,9 @@
  */
 package com.sun.pdfview;
 
+import java.awt.Color;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.List;
@@ -269,8 +271,10 @@ public class PDFTextFormat implements Cloneable {
 	 */
 	public void doText(PDFPage cmds, String text) {
 		Point2D.Float zero = new Point2D.Float();
-		AffineTransform scale = new AffineTransform(this.fsize * this.th, 0, 0, this.fsize, 0,
-				this.tr);
+		AffineTransform scale = new AffineTransform(
+				this.fsize * this.th, 0, /* 0 */
+				0, this.fsize, /* 0 */
+				0, this.tr /* 1 */);
 		AffineTransform at = new AffineTransform();
 
 		List<PDFGlyph> l = this.font.getGlyphs(text);
@@ -281,13 +285,54 @@ public class PDFTextFormat implements Cloneable {
 			at.setTransform(this.cur);
 			at.concatenate(scale);
 
-			Point2D advance = glyph.addCommands(cmds, at, this.tm);
-
+			Point2D advance = glyph.getAdvance();
 			double advanceX = (advance.getX() * this.fsize) + this.tc;
+			double advanceY = advance.getY() + this.fsize;
 			if (glyph.getChar() == ' ') {
 				advanceX += this.tw;
 			}
 			advanceX *= this.th;
+			if (PDFParser.SHOW_TEXT_REGIONS) {
+				GeneralPath path = new GeneralPath();
+				path.moveTo(0, 0);
+				path.lineTo(1, 0);
+				path.lineTo(1, 1);
+				path.lineTo(0, 1);
+				path.lineTo(0, 0);
+				path.closePath();
+				path = (GeneralPath) path.createTransformedShape(at);
+				System.out.println("BOX " + path.getBounds());
+				PDFCmd last = cmds.findLastCommand(PDFFillPaintCmd.class);
+				System.out.println("BOX " + last);
+				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(255, 0, 0)));
+				cmds.addPath(path, PDFShapeCmd.FILL);
+				if (last != null) {
+					cmds.addCommand(last);
+				}
+			}
+			if (!PDFParser.DISABLE_TEXT) {
+				advance = glyph.addCommands(cmds, at, this.tm);
+			}
+			if (PDFParser.SHOW_TEXT_ANCHOR) {
+				AffineTransform at2 = new AffineTransform();
+				at2.setTransform(this.cur);
+				GeneralPath path = new GeneralPath();
+				path.moveTo(0, 0);
+				path.lineTo(4, 0);
+				path.lineTo(4, 4);
+				path.lineTo(0, 4);
+				path.lineTo(0, 0);
+				path.closePath();
+				path = (GeneralPath) path.createTransformedShape(at2);
+				System.out.println("BOX " + path.getBounds());
+				PDFCmd last = cmds.findLastCommand(PDFFillPaintCmd.class);
+				System.out.println("BOX " + last);
+				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(255, 255, 0)));
+				cmds.addPath(path, PDFShapeCmd.FILL);
+				if (last != null) {
+					cmds.addCommand(last);
+				}
+			}
 
 			this.cur.translate(advanceX, advance.getY());
 		}

@@ -43,9 +43,9 @@ public class PDFShapeCmd extends PDFCmd {
 	/** set the clip region to the path */
 	public static final int CLIP = 4;
 	/** base path */
-	private GeneralPath gp;
+	private final GeneralPath gp;
 	/** the style */
-	private int style;
+	private final int style;
 	/** the bounding box of the path */
 	// private Rectangle2D bounds;
 	/** the stroke style for the anti-antialias stroke */

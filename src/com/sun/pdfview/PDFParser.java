@@ -54,19 +54,24 @@ public class PDFParser extends BaseWatchable {
 	public final static String DEBUG_DCTDECODE_DATA = "debugdctdecode";
 
 	public static final boolean DISABLE_TEXT = false;
-	public static final boolean DISABLE_IMAGES = false;
-	public static final boolean DISABLE_PATH_STROKE = false;
-	public static final boolean DISABLE_PATH_FILL = false;
-	public static final boolean DISABLE_PATH_STROKE_FILL = false;
-	public static final boolean DISABLE_CLIP = false;
+	public static final boolean DISABLE_IMAGES = true;
+	public static final boolean DISABLE_PATH_STROKE = true;
+	public static final boolean DISABLE_PATH_FILL = true;
+	public static final boolean DISABLE_PATH_STROKE_FILL = true;
+	public static final boolean DISABLE_CLIP = true;
 	public static final boolean DISABLE_FORMS = true;
 	public static final boolean DISABLE_SHADER = true;
+
+	public static final boolean SHOW_TEXT_REGIONS = true;
+	public static final boolean SHOW_TEXT_ANCHOR = true;
 
 	public static final boolean DISABLE_THUMBNAILS = true;
 
 	public static final long DRAW_DELAY = 0;
 
 	private static final int DEBUG_STOP_AT_INDEX = 0;
+
+	private static final boolean DEBUG_OPERATORS = false;
 
 	private int mDebugCommandIndex;
 
@@ -811,15 +816,11 @@ public class PDFParser extends BaseWatchable {
 				this.state.textFormat.carriageReturn();
 			} else if (cmd.equals("Tj")) {
 				// show text
-				if (!PDFParser.DISABLE_TEXT) {
-					this.state.textFormat.doText(this.cmds, popString());
-				}
+				this.state.textFormat.doText(this.cmds, popString());
 			} else if (cmd.equals("\'")) {
 				// next line and show text: T* string Tj
 				this.state.textFormat.carriageReturn();
-				if (!PDFParser.DISABLE_TEXT) {
-					this.state.textFormat.doText(this.cmds, popString());
-				}
+				this.state.textFormat.doText(this.cmds, popString());
 			} else if (cmd.equals("\"")) {
 				// draw string on new line with char & word spacing:
 				// aw Tw ac Tc string '
@@ -927,8 +928,10 @@ public class PDFParser extends BaseWatchable {
 		for (Object operator : this.stack) {
 			operators += operator + " ";
 		}
-		System.out.println("parser{" + hashCode() + "} " + progress + ": #" + mDebugCommandIndex
-				+ " \t" + operators + obj.name);
+		if (DEBUG_OPERATORS) {
+			System.out.println("parser{" + hashCode() + "} " + progress + ": #" + mDebugCommandIndex
+					+ " \t" + operators + obj.name);
+		}
 		mDebugCommandIndex++;
 		if (PDFParser.DEBUG_STOP_AT_INDEX > 0
 				&& mDebugCommandIndex > PDFParser.DEBUG_STOP_AT_INDEX) {

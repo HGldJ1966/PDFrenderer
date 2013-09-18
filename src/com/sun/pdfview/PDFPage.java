@@ -388,6 +388,17 @@ public class PDFPage {
 		return this.commands.subList(startIndex, endIndex);
 	}
 
+	public PDFCmd findLastCommand(Class<?> cls) {
+		int index = this.commands.size();
+		while (index-- >= 0) {
+			PDFCmd cmd = this.commands.get(index);
+			if (cmd.getClass().isAssignableFrom(cls)) {
+				return cmd;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Add a single command to the page list.
 	 */
