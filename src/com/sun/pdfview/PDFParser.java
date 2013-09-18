@@ -53,16 +53,16 @@ public class PDFParser extends BaseWatchable {
 	/** emit a file of DCT stream data. */
 	public final static String DEBUG_DCTDECODE_DATA = "debugdctdecode";
 
-	public static final boolean DISABLE_TEXT = false;
+	public static final boolean DISABLE_TEXT = true;
 	public static final boolean DISABLE_IMAGES = true;
-	public static final boolean DISABLE_PATH_STROKE = true;
-	public static final boolean DISABLE_PATH_FILL = true;
-	public static final boolean DISABLE_PATH_STROKE_FILL = true;
+	public static final boolean DISABLE_PATH_STROKE = false;
+	public static final boolean DISABLE_PATH_FILL = false;
+	public static final boolean DISABLE_PATH_STROKE_FILL = false;
 	public static final boolean DISABLE_CLIP = true;
 	public static final boolean DISABLE_FORMS = true;
 	public static final boolean DISABLE_SHADER = true;
 
-	public static final boolean SHOW_TEXT_REGIONS = true;
+	public static final boolean SHOW_TEXT_REGIONS = false;
 	public static final boolean SHOW_TEXT_ANCHOR = true;
 
 	public static final boolean DISABLE_THUMBNAILS = true;
@@ -834,9 +834,7 @@ public class PDFParser extends BaseWatchable {
 				}
 			} else if (cmd.equals("TJ")) {
 				// show kerned string
-				if (!PDFParser.DISABLE_TEXT) {
-					this.state.textFormat.doText(this.cmds, popArray());
-				}
+				this.state.textFormat.doText(this.cmds, popArray());
 			} else if (cmd.equals("BI")) {
 				// parse inline image
 				parseInlineImage();
@@ -929,7 +927,8 @@ public class PDFParser extends BaseWatchable {
 			operators += operator + " ";
 		}
 		if (DEBUG_OPERATORS) {
-			System.out.println("parser{" + hashCode() + "} " + progress + ": #" + mDebugCommandIndex
+			System.out.println("parser{" + hashCode() + "} " + progress + ": #"
+					+ mDebugCommandIndex
 					+ " \t" + operators + obj.name);
 		}
 		mDebugCommandIndex++;

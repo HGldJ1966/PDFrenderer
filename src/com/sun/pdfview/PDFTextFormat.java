@@ -279,19 +279,16 @@ public class PDFTextFormat implements Cloneable {
 
 		List<PDFGlyph> l = this.font.getGlyphs(text);
 
+		if (PDFParser.SHOW_TEXT_ANCHOR) {
+			System.out.println("POINT count: " + l.size());
+		}
+
 		for (Iterator<PDFGlyph> i = l.iterator(); i.hasNext();) {
 			PDFGlyph glyph = i.next();
 
 			at.setTransform(this.cur);
 			at.concatenate(scale);
 
-			Point2D advance = glyph.getAdvance();
-			double advanceX = (advance.getX() * this.fsize) + this.tc;
-			double advanceY = advance.getY() + this.fsize;
-			if (glyph.getChar() == ' ') {
-				advanceX += this.tw;
-			}
-			advanceX *= this.th;
 			if (PDFParser.SHOW_TEXT_REGIONS) {
 				GeneralPath path = new GeneralPath();
 				path.moveTo(0, 0);
@@ -302,35 +299,41 @@ public class PDFTextFormat implements Cloneable {
 				path.closePath();
 				path = (GeneralPath) path.createTransformedShape(at);
 				System.out.println("BOX " + path.getBounds());
-				PDFCmd last = cmds.findLastCommand(PDFFillPaintCmd.class);
-				System.out.println("BOX " + last);
-				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(255, 0, 0)));
+				PDFCmd lastColor = cmds.findLastCommand(PDFFillPaintCmd.class);
+				System.out.println("BOX " + lastColor);
+				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(160, 160, 255)));
 				cmds.addPath(path, PDFShapeCmd.FILL);
-				if (last != null) {
-					cmds.addCommand(last);
+				if (lastColor != null) {
+					cmds.addCommand(lastColor);
 				}
 			}
+			Point2D advance = glyph.getAdvance();
 			if (!PDFParser.DISABLE_TEXT) {
 				advance = glyph.addCommands(cmds, at, this.tm);
 			}
+			double advanceX = (advance.getX() * this.fsize) + this.tc;
+			double advanceY = advance.getY() + this.fsize;
+			if (glyph.getChar() == ' ') {
+				advanceX += this.tw;
+			}
+			advanceX *= this.th;
 			if (PDFParser.SHOW_TEXT_ANCHOR) {
 				AffineTransform at2 = new AffineTransform();
 				at2.setTransform(this.cur);
 				GeneralPath path = new GeneralPath();
 				path.moveTo(0, 0);
-				path.lineTo(4, 0);
-				path.lineTo(4, 4);
-				path.lineTo(0, 4);
+				path.lineTo(6, 0);
+				path.lineTo(6, 6);
+				path.lineTo(0, 6);
 				path.lineTo(0, 0);
 				path.closePath();
 				path = (GeneralPath) path.createTransformedShape(at2);
-				System.out.println("BOX " + path.getBounds());
-				PDFCmd last = cmds.findLastCommand(PDFFillPaintCmd.class);
-				System.out.println("BOX " + last);
-				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(255, 255, 0)));
+				System.out.println("POINT " + advance);
+				PDFCmd lastColor = cmds.findLastCommand(PDFFillPaintCmd.class);
+				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(255, 0, 0)));
 				cmds.addPath(path, PDFShapeCmd.FILL);
-				if (last != null) {
-					cmds.addCommand(last);
+				if (lastColor != null) {
+					cmds.addCommand(lastColor);
 				}
 			}
 
