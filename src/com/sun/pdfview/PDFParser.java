@@ -829,9 +829,7 @@ public class PDFParser extends BaseWatchable {
 				float aw = popFloat();
 				this.state.textFormat.setWordSpacing(aw);
 				this.state.textFormat.setCharSpacing(ac);
-				if (!PDFParser.DISABLE_TEXT) {
-					this.state.textFormat.doText(this.cmds, string);
-				}
+				this.state.textFormat.doText(this.cmds, string);
 			} else if (cmd.equals("TJ")) {
 				// show kerned string
 				this.state.textFormat.doText(this.cmds, popArray());
