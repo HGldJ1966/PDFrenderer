@@ -37,6 +37,7 @@ import java.util.Stack;
 
 import com.sun.pdfview.colorspace.PDFColorSpace;
 import com.sun.pdfview.colorspace.PatternSpace;
+import com.sun.pdfview.decode.PDFDecoder;
 import com.sun.pdfview.font.PDFFont;
 import com.sun.pdfview.pattern.PDFShader;
 
@@ -54,7 +55,7 @@ public class PDFParser extends BaseWatchable {
 	public final static String DEBUG_DCTDECODE_DATA = "debugdctdecode";
 
 	public static final boolean DISABLE_TEXT = true;
-	public static final boolean DISABLE_IMAGES = true;
+	public static final boolean DISABLE_IMAGES = false;
 	public static final boolean DISABLE_PATH_STROKE = false;
 	public static final boolean DISABLE_PATH_FILL = false;
 	public static final boolean DISABLE_PATH_STROKE_FILL = false;
@@ -65,13 +66,14 @@ public class PDFParser extends BaseWatchable {
 	public static final boolean SHOW_TEXT_REGIONS = false;
 	public static final boolean SHOW_TEXT_ANCHOR = true;
 
+	public static final boolean DEBUG_TEXT = false;
+	public static final boolean DEBUG_IMAGES = false;
+	public static final boolean DEBUG_OPERATORS = true;
+	public static final int DEBUG_STOP_AT_INDEX = 0;
+
 	public static final boolean DISABLE_THUMBNAILS = true;
 
 	public static final long DRAW_DELAY = 0;
-
-	private static final int DEBUG_STOP_AT_INDEX = 0;
-
-	private static final boolean DEBUG_OPERATORS = false;
 
 	private int mDebugCommandIndex;
 
@@ -89,7 +91,8 @@ public class PDFParser extends BaseWatchable {
 	private boolean catchexceptions = true; // Indicates state of BX...EX
 	/**
 	 * a weak reference to the page we render into. For the page
-	 * to remain available, some other code must retain a strong reference to it.
+	 * to remain available, some other code must retain a strong reference to
+	 * it.
 	 */
 	private final WeakReference<PDFPage> pageRef;
 	/**
@@ -767,7 +770,11 @@ public class PDFParser extends BaseWatchable {
 				this.cmds.addFillPaint(this.state.fillCS.getPaint(popFloat(4)));
 			} else if (cmd.equals("Do")) {
 				// make a do call on the referenced object
-				PDFObject xobj = findResource(popString(), "XObject");
+				String name = popString();
+				if (PDFParser.DEBUG_IMAGES) {
+					System.out.println("XObject reference to " + name);
+				}
+				PDFObject xobj = findResource(name, "XObject");
 				doXObject(xobj);
 			} else if (cmd.equals("BT")) {
 				processBTCmd();
@@ -1078,6 +1085,15 @@ public class PDFParser extends BaseWatchable {
 	 */
 	private void doImage(PDFObject obj) throws IOException {
 		if (!PDFParser.DISABLE_IMAGES) {
+			if (PDFParser.DEBUG_IMAGES) {
+				final boolean jpegDecode = PDFDecoder
+						.isLastFilter(obj, PDFDecoder.DCT_FILTERS);
+				if (jpegDecode) {
+					System.out.println("Image is JPEG");
+				} else {
+					System.out.println("Image not JPEG");
+				}
+			}
 			this.cmds.addImage(PDFImage.createImage(obj, this.resources, false));
 		}
 	}
@@ -1279,6 +1295,9 @@ public class PDFParser extends BaseWatchable {
 		}
 
 		// data runs from dstart to loc
+		if (PDFParser.DEBUG_IMAGES) {
+			System.out.println("InlineImage from " + dstart + " to " + this.loc);
+		}
 		byte[] data = new byte[this.loc - dstart];
 		System.arraycopy(this.stream, dstart, data, 0, this.loc - dstart);
 		obj.setStream(ByteBuffer.wrap(data));

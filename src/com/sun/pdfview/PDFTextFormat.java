@@ -280,7 +280,9 @@ public class PDFTextFormat implements Cloneable {
 		List<PDFGlyph> l = this.font.getGlyphs(text);
 
 		if (PDFParser.SHOW_TEXT_ANCHOR) {
-			System.out.println("POINT count: " + l.size());
+			if (PDFParser.DEBUG_TEXT) {
+				System.out.println("POINT count: " + l.size());
+			}
 		}
 
 		for (Iterator<PDFGlyph> i = l.iterator(); i.hasNext();) {
@@ -298,9 +300,13 @@ public class PDFTextFormat implements Cloneable {
 				path.lineTo(0, 0);
 				path.closePath();
 				path = (GeneralPath) path.createTransformedShape(at);
-				System.out.println("BOX " + path.getBounds());
+				if (PDFParser.DEBUG_TEXT) {
+					System.out.println("BOX " + path.getBounds());
+				}
 				PDFCmd lastColor = cmds.findLastCommand(PDFFillPaintCmd.class);
-				System.out.println("BOX " + lastColor);
+				if (PDFParser.DEBUG_TEXT) {
+					System.out.println("BOX " + lastColor);
+				}
 				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(160, 160, 255)));
 				cmds.addPath(path, PDFShapeCmd.FILL);
 				if (lastColor != null) {
@@ -328,7 +334,9 @@ public class PDFTextFormat implements Cloneable {
 				path.lineTo(0, 0);
 				path.closePath();
 				path = (GeneralPath) path.createTransformedShape(at2);
-				System.out.println("POINT " + advance);
+				if (PDFParser.DEBUG_TEXT) {
+					System.out.println("POINT " + advance);
+				}
 				PDFCmd lastColor = cmds.findLastCommand(PDFFillPaintCmd.class);
 				cmds.addFillPaint(PDFPaint.getColorPaint(new Color(255, 0, 0)));
 				cmds.addPath(path, PDFShapeCmd.FILL);
